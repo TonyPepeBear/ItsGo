@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">It\'s go</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoidG9ueXBlcGUiLCJhIjoiY2w5MW5vbnU0MGppdjQwbnNidHR5Z3l0MCJ9.yx5uqxcO88y8vWAxodrPfg</string>
 </resources>
