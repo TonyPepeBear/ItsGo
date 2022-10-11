@@ -9,8 +9,13 @@ import com.mapbox.maps.RenderedQueryGeometry
 import com.mapbox.maps.RenderedQueryOptions
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.localization.localizeLabels
+import com.mapbox.maps.extension.style.layers.addLayer
 import com.mapbox.maps.extension.style.layers.generated.circleLayer
+import com.mapbox.maps.extension.style.layers.generated.fillLayer
+import com.mapbox.maps.extension.style.sources.addSource
+import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
+import com.mapbox.maps.extension.style.sources.getSourceAs
 import com.mapbox.maps.extension.style.style
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
@@ -27,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         model.fetchGoStation()
         setContentView(binding.root)
         val mapbox = binding.mapView.getMapboxMap()
-        model.featureCollectionLiveData.observe(this) {
+        model.goStationFeatureCollectionLiveData.observe(this) {
             mapbox.loadStyle(
                 style(styleUri = Style.LIGHT) {
                     +geoJsonSource(GOGORO_SOURCE_ID) {
@@ -42,6 +47,25 @@ class MainActivity : AppCompatActivity() {
                 }
             )
         }
+        model.isochroneFeatureCollectionLiveData.observe(this) { featureCollection ->
+            mapbox.getStyle {
+                if (it.styleSourceExists(ISOCHRONE_SOURCE_ID)) {
+                    it.getSourceAs<GeoJsonSource>(ISOCHRONE_SOURCE_ID)
+                        ?.featureCollection(featureCollection)
+                } else {
+                    it.addSource(geoJsonSource(ISOCHRONE_SOURCE_ID) {
+                        featureCollection(featureCollection)
+                        cluster(false)
+                    })
+                }
+                if (!it.styleLayerExists(ISOCHRONE_LAYER_ID)) {
+                    it.addLayer(fillLayer(ISOCHRONE_LAYER_ID, ISOCHRONE_SOURCE_ID) {
+                        fillOpacity(0.5)
+                    })
+                }
+            }
+
+        }
         mapbox.addOnMapClickListener { point ->
             mapbox.queryRenderedFeatures(
                 RenderedQueryGeometry(mapbox.pixelForCoordinate(point)),
@@ -51,7 +75,6 @@ class MainActivity : AppCompatActivity() {
                     Log.e(TAG, it.error!!)
                     return@queryRenderedFeatures
                 }
-                Log.d(TAG, it.value!!.size.toString())
                 if (!it.value.isNullOrEmpty()) {
                     Toast.makeText(
                         this@MainActivity,
@@ -59,6 +82,7 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     )
                         .show()
+                    model.fetchIsochrone(point, 50 * 1000)
                 }
             }
             true
@@ -68,5 +92,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val GOGORO_SOURCE_ID = "GOGORO_SOURCE_ID"
         const val GOGORO_LAYER_ID = "GOGORO_LAYER_ID"
+        const val ISOCHRONE_SOURCE_ID = "ISOCHRONE_SOURCE_ID"
+        const val ISOCHRONE_LAYER_ID = "ISOCHRONE_LAYER_ID"
     }
 }
