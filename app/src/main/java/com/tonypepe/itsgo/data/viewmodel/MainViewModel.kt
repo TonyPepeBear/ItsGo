@@ -35,7 +35,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun fetchGoStation() {
         viewModelScope.launch(Dispatchers.IO) {
             val req = Request.Builder()
-                .url("https://github.com/tonypepebear/gogoroapi/releases/latest/download/gogoroapi.csv")
+                .url("https://github.com/tonypepebear/gogoroapi/releases/latest/download/go-station.csv")
                 .build()
             val s = httpClient.newCall(req).execute().body?.string() ?: return@launch
             val arr = s.split("\n")
