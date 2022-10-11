@@ -19,6 +19,7 @@ import com.tonypepe.itsgo.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     val model: MainViewModel by viewModels()
+    val TAG = this::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,10 +48,10 @@ class MainActivity : AppCompatActivity() {
                 RenderedQueryOptions(listOf(GOGORO_LAYER_ID), null)
             ) {
                 if (it.error != null) {
-                    Log.e("WAA", it.error!!)
+                    Log.e(TAG, it.error!!)
                     return@queryRenderedFeatures
                 }
-                Log.d("WAA", it.value!!.size.toString())
+                Log.d(TAG, it.value!!.size.toString())
                 if (!it.value.isNullOrEmpty()) {
                     Toast.makeText(
                         this@MainActivity,
