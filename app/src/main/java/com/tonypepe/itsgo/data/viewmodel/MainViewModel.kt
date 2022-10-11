@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.google.gson.JsonObject
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
@@ -25,7 +26,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     Point.fromLngLat(
                         it.lng!!.toDouble(),
                         it.lat!!.toDouble()
-                    )
+                    ),
+                    JsonObject().apply { addProperty("name", it.name) }
                 )
             })
         }
