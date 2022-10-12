@@ -11,10 +11,12 @@ import com.tonypepe.itsgo.data.AppDatabase
 import com.tonypepe.itsgo.data.entity.GoStation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
+import java.io.IOException
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+    private val TAG = this::class.java.simpleName
+
     private val db by lazy { AppDatabase.getInstance(getApplication<Application>().applicationContext) }
 
     private val httpClient by lazy { OkHttpClient() }
@@ -39,6 +41,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     )
     val isochroneFeatureCollectionLiveData: LiveData<FeatureCollection> get() = _isochroneFeatureCollectionLiveData
 
+    private val _toastMessageLiveData: MutableLiveData<String> = MutableLiveData("")
+    val toastMessageLiveData: LiveData<String> get() = _toastMessageLiveData
+
     private val resources
         get() = getApplication<Application>().resources
 
@@ -47,15 +52,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val req = Request.Builder()
                 .url("https://github.com/tonypepebear/gogoroapi/releases/latest/download/go-station.csv")
                 .build()
-            val s = httpClient.newCall(req).execute().body?.string() ?: return@launch
-            val arr = s.split("\n")
-                .drop(1)
-                .map { it.split(",") }
-                .filter { it.size == 4 }
-                .map { GoStation(it[0], it[1], it[2], it[3]) }
-                .toTypedArray()
-            db.goStationDao().deleteAll()
-            db.goStationDao().insertAll(*arr)
+            httpClient.newCall(req).enqueue(object : Callback {
+                override fun onResponse(call: Call, response: Response) {
+                    val s = response.body!!.string()
+                    val arr = s.split("\n")
+                        .drop(1)
+                        .map { it.split(",") }
+                        .filter { it.size == 4 }
+                        .map { GoStation(it[0], it[1], it[2], it[3]) }
+                        .toTypedArray()
+                    db.goStationDao().deleteAll()
+                    db.goStationDao().insertAll(*arr)
+                }
+
+                override fun onFailure(call: Call, e: IOException) {
+                    _toastMessageLiveData.postValue("Network error")
+                }
+            })
         }
     }
 
@@ -64,18 +77,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val req = Request.Builder()
                 .url(createIsochroneURL(point, meters))
                 .build()
-            val resStr = httpClient.newCall(req).execute().body?.string() ?: return@launch
-            val featureCollection = FeatureCollection.fromJson(resStr)
-            _isochroneFeatureCollectionLiveData.postValue(featureCollection)
+            httpClient.newCall(req).enqueue(object : Callback {
+                override fun onResponse(call: Call, response: Response) {
+                    val resStr = response.body!!.string()
+                    val featureCollection = FeatureCollection.fromJson(resStr)
+                    _isochroneFeatureCollectionLiveData.postValue(featureCollection)
+                }
+
+                override fun onFailure(call: Call, e: IOException) {
+                    _toastMessageLiveData.postValue("Network Error")
+                }
+            })
         }
     }
 
-    fun createIsochroneURL(point: Point, meters: Int): String {
-        return "https://api.mapbox.com/isochrone/v1/mapbox/driving/" +
+    fun createIsochroneURL(point: Point, meters: Int): String =
+        "https://api.mapbox.com/isochrone/v1/mapbox/driving/" +
                 "${point.longitude()},${point.latitude()}?" +
                 "contours_meters=$meters&" +
                 "polygons=true&" +
                 "denoise=1&" +
                 "access_token=${resources.getString(R.string.mapbox_access_token)}"
-    }
 }

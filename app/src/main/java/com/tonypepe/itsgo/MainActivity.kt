@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
         model.isochroneFeatureCollectionLiveData.observe(this) { featureCollection ->
-            if (featureCollection.features() == null) return@observe
+            if (featureCollection.features() == null || mapbox.getStyle() == null) return@observe
             mapbox.getStyle {
                 if (it.styleSourceExists(ISOCHRONE_SOURCE_ID)) {
                     it.getSourceAs<GeoJsonSource>(ISOCHRONE_SOURCE_ID)
@@ -69,7 +69,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 if (featureCollection.features()!!.size > 0) {
                     val points = TurfMeta.coordAll(featureCollection, false)
-                    Log.d(TAG, "onCreate: $points")
                     val options = mapbox.cameraForCoordinates(
                         points,
                         padding = EdgeInsets(1.0, 1.0, 1.0, 1.0)
@@ -98,6 +97,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             true
+        }
+        model.toastMessageLiveData.observe(this) {
+            if (it.isBlank()) return@observe
+            Toast.makeText(this, "Network error", Toast.LENGTH_SHORT).show()
         }
     }
 
