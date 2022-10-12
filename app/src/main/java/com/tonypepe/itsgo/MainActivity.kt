@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.RenderedQueryGeometry
 import com.mapbox.maps.RenderedQueryOptions
 import com.mapbox.maps.Style
@@ -17,7 +18,9 @@ import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.sources.getSourceAs
 import com.mapbox.maps.extension.style.style
+import com.mapbox.maps.plugin.animation.flyTo
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.turf.TurfMeta
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.ActivityMainBinding
 
@@ -48,6 +51,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
         model.isochroneFeatureCollectionLiveData.observe(this) { featureCollection ->
+            if (featureCollection.features() == null) return@observe
             mapbox.getStyle {
                 if (it.styleSourceExists(ISOCHRONE_SOURCE_ID)) {
                     it.getSourceAs<GeoJsonSource>(ISOCHRONE_SOURCE_ID)
@@ -63,8 +67,16 @@ class MainActivity : AppCompatActivity() {
                         fillOpacity(0.5)
                     })
                 }
+                if (featureCollection.features()!!.size > 0) {
+                    val points = TurfMeta.coordAll(featureCollection, false)
+                    Log.d(TAG, "onCreate: $points")
+                    val options = mapbox.cameraForCoordinates(
+                        points,
+                        padding = EdgeInsets(1.0, 1.0, 1.0, 1.0)
+                    )
+                    mapbox.flyTo(options)
+                }
             }
-
         }
         mapbox.addOnMapClickListener { point ->
             mapbox.queryRenderedFeatures(
