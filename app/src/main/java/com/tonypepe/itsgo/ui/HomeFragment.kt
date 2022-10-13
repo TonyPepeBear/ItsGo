@@ -96,7 +96,7 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
             if (point != null) {
                 val cameraOptions = CameraOptions.Builder()
                     .center(point)
-                    .zoom(15.0)
+                    .zoom(13.0)
                     .build()
                 val animationOptions = MapAnimationOptions.mapAnimationOptions {
                     duration(3 * 1000)
