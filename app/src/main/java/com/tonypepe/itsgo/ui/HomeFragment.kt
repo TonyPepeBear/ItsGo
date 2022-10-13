@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
+import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.RenderedQueryGeometry
@@ -41,28 +42,21 @@ class HomeFragment : Fragment(), OnMapClickListener {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         mapbox = binding.mapView.getMapboxMap()
-        mapbox.loadStyleUri(Style.MAPBOX_STREETS) {
-            it.localizeLabels(resources.configuration.locales[0])
+        mapbox.loadStyleUri(Style.MAPBOX_STREETS) { style ->
+            style.localizeLabels(resources.configuration.locales[0])
+            style.addSource(geoJsonSource(GO_STATION_SOURCE_ID) {
+                featureCollection(FeatureCollection.fromFeatures(emptyArray()))
+                cluster(false)
+            })
+            style.addLayer(circleLayer(GO_STATION_LAYER_ID, GO_STATION_SOURCE_ID) {
+                circleRadius(10.0)
+            })
         }
         mapbox.addOnMapClickListener(this)
         model.goStationFeatureCollectionLiveData.observe(viewLifecycleOwner) { collection ->
             mapbox.getStyle { style ->
-                // add source
-                if (!style.styleSourceExists(GO_STATION_SOURCE_ID)) {
-                    style.addSource(geoJsonSource(GO_STATION_SOURCE_ID) {
-                        featureCollection(collection)
-                        cluster(false)
-                    })
-                } else {
-                    style.getSourceAs<GeoJsonSource>(GO_STATION_SOURCE_ID)!!
-                        .featureCollection(collection)
-                }
-                // layer
-                if (!style.styleLayerExists(GO_STATION_LAYER_ID)) {
-                    style.addLayer(circleLayer(GO_STATION_LAYER_ID, GO_STATION_SOURCE_ID) {
-                        circleRadius(10.0)
-                    })
-                }
+                style.getSourceAs<GeoJsonSource>(GO_STATION_SOURCE_ID)!!
+                    .featureCollection(collection)
             }
         }
         return binding.root
