@@ -42,8 +42,10 @@ class HomeFragment : Fragment(), OnMapClickListener {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         mapbox = binding.mapView.getMapboxMap()
+        // init mapbox
         mapbox.loadStyleUri(Style.MAPBOX_STREETS) { style ->
             style.localizeLabels(resources.configuration.locales[0])
+            // add empty source
             style.addSource(geoJsonSource(GO_STATION_SOURCE_ID) {
                 featureCollection(FeatureCollection.fromFeatures(emptyArray()))
                 cluster(false)
@@ -53,6 +55,7 @@ class HomeFragment : Fragment(), OnMapClickListener {
             })
         }
         mapbox.addOnMapClickListener(this)
+        // observe go station livedata to mapbox source
         model.goStationFeatureCollectionLiveData.observe(viewLifecycleOwner) { collection ->
             mapbox.getStyle { style ->
                 style.getSourceAs<GeoJsonSource>(GO_STATION_SOURCE_ID)!!
