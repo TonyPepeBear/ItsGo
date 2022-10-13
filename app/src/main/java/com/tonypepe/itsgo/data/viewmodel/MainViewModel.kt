@@ -57,7 +57,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchGoStation() {
         viewModelScope.launch(Dispatchers.IO) {
-            db.goStationDao().deleteAll()
             val req = Request.Builder()
                 .url("https://github.com/tonypepebear/gogoroapi/releases/latest/download/go-station.csv")
                 .build()

@@ -8,4 +8,7 @@
     <string name="action_settings">設定</string>
     <string name="go_station_count">Go Station 數量： %d</string>
     <string name="nothing">空空如也</string>
+    <string name="update_go_station">更新 Go Station</string>
+    <string name="updating">更新中</string>
+    <string name="dont_touch_me">別碰我</string>
 </resources>

@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-                else -> Snackbar.make(view, "Don't touch me", Snackbar.LENGTH_SHORT).show()
+                else -> Snackbar.make(view, R.string.dont_touch_me, Snackbar.LENGTH_SHORT).show()
             }
         }
         val drawerLayout: DrawerLayout = binding.drawerLayout
