@@ -1,113 +1,65 @@
 package com.tonypepe.itsgo
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import android.view.Menu
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.mapbox.maps.EdgeInsets
-import com.mapbox.maps.RenderedQueryGeometry
-import com.mapbox.maps.RenderedQueryOptions
-import com.mapbox.maps.Style
-import com.mapbox.maps.extension.localization.localizeLabels
-import com.mapbox.maps.extension.style.layers.addLayer
-import com.mapbox.maps.extension.style.layers.generated.circleLayer
-import com.mapbox.maps.extension.style.layers.generated.fillLayer
-import com.mapbox.maps.extension.style.sources.addSource
-import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
-import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
-import com.mapbox.maps.extension.style.sources.getSourceAs
-import com.mapbox.maps.extension.style.style
-import com.mapbox.maps.plugin.animation.flyTo
-import com.mapbox.maps.plugin.gestures.addOnMapClickListener
-import com.mapbox.turf.TurfMeta
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    lateinit var binding: ActivityMainBinding
-    val model: MainViewModel by viewModels()
-    val TAG = this::class.java.simpleName
+    private val TAG = this::class.java.simpleName
+    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var binding: ActivityMainBinding
+    private val model: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
-        model.fetchGoStation()
         setContentView(binding.root)
-        val mapbox = binding.mapView.getMapboxMap()
-        model.goStationFeatureCollectionLiveData.observe(this) {
-            mapbox.loadStyle(
-                style(styleUri = Style.LIGHT) {
-                    +geoJsonSource(GOGORO_SOURCE_ID) {
-                        featureCollection(it)
-                        cluster(false)
-                    }
-                    +circleLayer(layerId = GOGORO_LAYER_ID, sourceId = GOGORO_SOURCE_ID) {
-                        circleRadius(10.0)
-                    }
-                }, onStyleLoaded = {
-                    it.localizeLabels(resources.configuration.locales[0])
-                }
-            )
-        }
-        model.isochroneFeatureCollectionLiveData.observe(this) { featureCollection ->
-            if (featureCollection.features() == null || mapbox.getStyle() == null) return@observe
-            mapbox.getStyle {
-                if (it.styleSourceExists(ISOCHRONE_SOURCE_ID)) {
-                    it.getSourceAs<GeoJsonSource>(ISOCHRONE_SOURCE_ID)
-                        ?.featureCollection(featureCollection)
-                } else {
-                    it.addSource(geoJsonSource(ISOCHRONE_SOURCE_ID) {
-                        featureCollection(featureCollection)
-                        cluster(false)
-                    })
-                }
-                if (!it.styleLayerExists(ISOCHRONE_LAYER_ID)) {
-                    it.addLayer(fillLayer(ISOCHRONE_LAYER_ID, ISOCHRONE_SOURCE_ID) {
-                        fillOpacity(0.5)
-                    })
-                }
-                if (featureCollection.features()!!.size > 0) {
-                    val points = TurfMeta.coordAll(featureCollection, false)
-                    val options = mapbox.cameraForCoordinates(
-                        points,
-                        padding = EdgeInsets(1.0, 1.0, 1.0, 1.0)
-                    )
-                    mapbox.flyTo(options)
-                }
+
+        setSupportActionBar(binding.appBarMain.toolbar)
+
+        binding.appBarMain.fab.setOnClickListener { view ->
+            lifecycleScope.launch(Dispatchers.Default) {
+                val size = model.goStationCount
+                Snackbar.make(view, size.toString(), Snackbar.LENGTH_LONG).show()
             }
         }
-        mapbox.addOnMapClickListener { point ->
-            mapbox.queryRenderedFeatures(
-                RenderedQueryGeometry(mapbox.pixelForCoordinate(point)),
-                RenderedQueryOptions(listOf(GOGORO_LAYER_ID), null)
-            ) {
-                if (it.error != null) {
-                    Log.e(TAG, it.error!!)
-                    return@queryRenderedFeatures
-                }
-                if (!it.value.isNullOrEmpty()) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        it.value!![0].feature.getStringProperty("name"),
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    model.fetchIsochrone(point, 50 * 1000)
-                }
-            }
-            true
-        }
-        model.toastMessageLiveData.observe(this) {
-            if (it.isBlank()) return@observe
-            Toast.makeText(this, "Network error", Toast.LENGTH_SHORT).show()
-        }
+        val drawerLayout: DrawerLayout = binding.drawerLayout
+        val navView: NavigationView = binding.navView
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
+            ), drawerLayout
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
     }
 
-    companion object {
-        const val GOGORO_SOURCE_ID = "GOGORO_SOURCE_ID"
-        const val GOGORO_LAYER_ID = "GOGORO_LAYER_ID"
-        const val ISOCHRONE_SOURCE_ID = "ISOCHRONE_SOURCE_ID"
-        const val ISOCHRONE_LAYER_ID = "ISOCHRONE_LAYER_ID"
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }

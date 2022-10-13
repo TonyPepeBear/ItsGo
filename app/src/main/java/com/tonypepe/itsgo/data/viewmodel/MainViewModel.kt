@@ -21,6 +21,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val httpClient by lazy { OkHttpClient() }
 
+    val goStationCount = db.goStationDao().getAll().size
+
     val goStationFeatureCollectionLiveData: LiveData<FeatureCollection> =
         db.goStationDao().getAllLiveData().map {
             FeatureCollection.fromFeatures(it.map {
