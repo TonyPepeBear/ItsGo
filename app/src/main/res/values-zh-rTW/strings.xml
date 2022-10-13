@@ -7,4 +7,5 @@
     <string name="menu_home">主頁</string>
     <string name="action_settings">設定</string>
     <string name="go_station_count">Go Station 數量： %d</string>
+    <string name="nothing">空空如也</string>
 </resources>
