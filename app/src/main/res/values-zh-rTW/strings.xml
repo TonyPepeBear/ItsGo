@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">這就GO</string>
+    <string name="menu_setting">設定</string>
+    <string name="navigation_drawer_open">開啟測邊欄</string>
+    <string name="navigation_drawer_close">關閉測邊欄</string>
+    <string name="menu_home">主頁</string>
+    <string name="action_settings">設定</string>
+    <string name="go_station_count">Go Station 數量： %d</string>
+</resources>

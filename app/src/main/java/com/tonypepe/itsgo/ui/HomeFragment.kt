@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
@@ -18,7 +20,8 @@ import com.mapbox.maps.RenderedQueryOptions
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.localization.localizeLabels
 import com.mapbox.maps.extension.style.layers.addLayer
-import com.mapbox.maps.extension.style.layers.generated.circleLayer
+import com.mapbox.maps.extension.style.layers.generated.symbolLayer
+import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.extension.style.sources.addSource
 import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
@@ -26,6 +29,7 @@ import com.mapbox.maps.extension.style.sources.getSourceAs
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import com.tonypepe.itsgo.R
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.FragmentHomeBinding
 
@@ -51,13 +55,22 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
         // init mapbox
         mapbox.loadStyleUri(Style.MAPBOX_STREETS) { style ->
             style.localizeLabels(resources.configuration.locales[0])
+            // battery img
+            style.addImage(
+                BATTERY_IMG_ID,
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_battery_solid)!!
+                    .toBitmap()
+            )
             // add empty source
             style.addSource(geoJsonSource(GO_STATION_SOURCE_ID) {
                 featureCollection(FeatureCollection.fromFeatures(emptyArray()))
                 cluster(false)
             })
-            style.addLayer(circleLayer(GO_STATION_LAYER_ID, GO_STATION_SOURCE_ID) {
-                circleRadius(10.0)
+            style.addLayer(symbolLayer(GO_STATION_LAYER_ID, GO_STATION_SOURCE_ID) {
+                sourceLayer(GO_STATION_SOURCE_ID)
+                iconImage(BATTERY_IMG_ID)
+                iconAllowOverlap(true)
+                iconAnchor(IconAnchor.BOTTOM)
             })
         }
         mapbox.addOnMapClickListener(this)
@@ -107,6 +120,7 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
     override fun onPermissionResult(granted: Boolean) {}
 
     companion object {
+        const val BATTERY_IMG_ID = "BATTERY_IMG_ID"
         const val GO_STATION_SOURCE_ID = "GOGORO_SOURCE_ID"
         const val GO_STATION_LAYER_ID = "GOGORO_LAYER_ID"
         const val ISOCHRONE_SOURCE_ID = "ISOCHRONE_SOURCE_ID"

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.tonypepe.itsgo.R
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.FragmentSettingsBinding
 
@@ -24,7 +25,7 @@ class SettingsFragment : Fragment() {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
         model.goStationCountLiveData.observe(viewLifecycleOwner) {
-            binding.text.text = "GoStation count: $it"
+            binding.text.text = resources.getString(R.string.go_station_count, it)
         }
         return root
     }
