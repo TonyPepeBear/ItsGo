@@ -81,7 +81,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun fetchIsochrone(point: Point, meters: Int) {
+    fun fetchIsochrone(point: Point, meters: Int = 50 * 1000) {
         viewModelScope.launch(Dispatchers.IO) {
             val req = Request.Builder()
                 .url(createIsochroneURL(point, meters))
@@ -98,6 +98,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
             })
         }
+    }
+
+    fun clearIsochrone() {
+        _isochroneFeatureCollectionLiveData.postValue(FeatureCollection.fromFeatures(emptyArray()))
     }
 
     fun createIsochroneURL(point: Point, meters: Int): String =

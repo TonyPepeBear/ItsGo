@@ -19,4 +19,5 @@
     <string name="dont_touch_me">Don\'t touch me</string>
     <string name="network_error">Network error</string>
     <string name="update_success">Update success</string>
+    <string name="show_isochrone">Show isochrone</string>
 </resources>

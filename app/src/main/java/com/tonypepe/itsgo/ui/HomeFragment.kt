@@ -17,17 +17,19 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.*
 import com.mapbox.maps.extension.localization.localizeLabels
 import com.mapbox.maps.extension.style.layers.addLayer
+import com.mapbox.maps.extension.style.layers.generated.fillLayer
 import com.mapbox.maps.extension.style.layers.generated.symbolLayer
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.extension.style.sources.addSource
 import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.sources.getSourceAs
-import com.mapbox.maps.plugin.animation.MapAnimationOptions
+import com.mapbox.maps.plugin.animation.MapAnimationOptions.Companion.mapAnimationOptions
 import com.mapbox.maps.plugin.animation.flyTo
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import com.mapbox.turf.TurfMeta
 import com.tonypepe.itsgo.R
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.FragmentHomeBinding
@@ -65,11 +67,20 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
                 featureCollection(FeatureCollection.fromFeatures(emptyArray()))
                 cluster(false)
             })
+            style.addSource(geoJsonSource(ISOCHRONE_SOURCE_ID) {
+                featureCollection(FeatureCollection.fromFeatures(emptyArray()))
+                cluster(false)
+            })
+            // layer
             style.addLayer(symbolLayer(GO_STATION_LAYER_ID, GO_STATION_SOURCE_ID) {
                 sourceLayer(GO_STATION_SOURCE_ID)
                 iconImage(BATTERY_IMG_ID)
                 iconAllowOverlap(true)
                 iconAnchor(IconAnchor.BOTTOM)
+            })
+            style.addLayer(fillLayer(ISOCHRONE_LAYER_ID, ISOCHRONE_SOURCE_ID) {
+                fillOpacity(0.5)
+                fillColor("#03fc8c")
             })
         }
         mapbox.addOnMapClickListener(this)
@@ -98,10 +109,32 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
                     .center(point)
                     .zoom(13.0)
                     .build()
-                val animationOptions = MapAnimationOptions.mapAnimationOptions {
+                val animationOptions = mapAnimationOptions {
                     duration(3 * 1000)
                 }
                 mapbox.flyTo(cameraOptions, animationOptions)
+            }
+        }
+        // observe isochrone
+        model.isochroneFeatureCollectionLiveData.observe(viewLifecycleOwner) { collection ->
+            val style = mapbox.getStyle() ?: return@observe
+            if (TurfMeta.coordAll(collection, false).size > 0) {
+                style.getSourceAs<GeoJsonSource>(ISOCHRONE_SOURCE_ID)!!
+                    .featureCollection(collection)
+                // camera
+                val points = TurfMeta.coordAll(collection, false)
+                val padding = 8.0
+                val cameraOptions = mapbox.cameraForCoordinates(
+                    points,
+                    padding = EdgeInsets(padding, padding, padding, padding)
+                )
+                val animationOptions = mapAnimationOptions {
+                    duration(2 * 1000)
+                }
+                mapbox.flyTo(cameraOptions, animationOptions)
+            } else {
+                style.getSourceAs<GeoJsonSource>(ISOCHRONE_SOURCE_ID)!!
+                    .featureCollection(FeatureCollection.fromFeatures(emptyArray()))
             }
         }
         return binding.root
@@ -121,9 +154,14 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
                     binding.root,
                     it.value!![0].feature.getStringProperty("name"),
                     Snackbar.LENGTH_SHORT
-                ).show()
+                )
+                    .setAction(R.string.show_isochrone) {
+                        model.fetchIsochrone(point)
+                    }
+                    .show()
             }
         }
+        model.clearIsochrone()
         return true
     }
 
