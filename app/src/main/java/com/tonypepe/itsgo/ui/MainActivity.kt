@@ -1,22 +1,19 @@
-package com.tonypepe.itsgo
+package com.tonypepe.itsgo.ui
 
 import android.os.Bundle
 import android.view.Menu
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
+import com.tonypepe.itsgo.R
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.ActivityMainBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val TAG = this::class.java.simpleName
@@ -33,10 +30,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
 
         binding.appBarMain.fab.setOnClickListener { view ->
-            lifecycleScope.launch(Dispatchers.Default) {
-                val size = model.goStationCount
-                Snackbar.make(view, size.toString(), Snackbar.LENGTH_LONG).show()
-            }
+            model.fetchGoStation()
         }
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView

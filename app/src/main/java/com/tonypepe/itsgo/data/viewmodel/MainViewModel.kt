@@ -21,7 +21,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val httpClient by lazy { OkHttpClient() }
 
-    val goStationCount = db.goStationDao().getAll().size
+    val goStationCountLiveData = liveData(Dispatchers.IO) {
+        emitSource(db.goStationDao().getAllLiveData().map { it.size })
+    }
 
     val goStationFeatureCollectionLiveData: LiveData<FeatureCollection> =
         db.goStationDao().getAllLiveData().map {
@@ -51,6 +53,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchGoStation() {
         viewModelScope.launch(Dispatchers.IO) {
+            db.goStationDao().deleteAll()
             val req = Request.Builder()
                 .url("https://github.com/tonypepebear/gogoroapi/releases/latest/download/go-station.csv")
                 .build()

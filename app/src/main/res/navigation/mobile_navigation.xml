@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.tonypepe.itsgo.ui.home.HomeFragment"
+        android:name="com.tonypepe.itsgo.ui.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.tonypepe.itsgo.ui.gallery.GalleryFragment"
+        android:name="com.tonypepe.itsgo.ui.GalleryFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="com.tonypepe.itsgo.ui.slideshow.SlideshowFragment"
+        android:name="com.tonypepe.itsgo.ui.SettingsFragment"
         android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        tools:layout="@layout/fragment_settings" />
 </navigation>

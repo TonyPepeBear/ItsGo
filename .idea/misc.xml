@@ -5,12 +5,16 @@
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.46331024169921875" />
         <entry key="app/src/main/res/drawable/ic_menu_gallery.xml" value="0.213" />
+        <entry key="app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.213" />
+        <entry key="app/src/main/res/drawable/side_nav_bar.xml" value="0.213" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2106807002314815" />
         <entry key="app/src/main/res/layout/activity_old_main.xml" value="0.11231884057971014" />
         <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.11231884057971014" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.11094224924012158" />
         <entry key="app/src/main/res/layout/fragment_gallery.xml" value="0.11231884057971014" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.11231884057971014" />
+        <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_slideshow.xml" value="0.20572916666666666" />
         <entry key="app/src/main/res/layout/nav_header_main.xml" value="0.19743499755859378" />
         <entry key="app/src/main/res/menu/activity_main_drawer.xml" value="0.20572916666666666" />
         <entry key="app/src/main/res/menu/main.xml" value="0.20572916666666666" />

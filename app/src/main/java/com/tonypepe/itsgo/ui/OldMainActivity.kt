@@ -1,4 +1,4 @@
-package com.tonypepe.itsgo
+package com.tonypepe.itsgo.ui
 
 import android.os.Bundle
 import android.util.Log
