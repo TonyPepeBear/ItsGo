@@ -11,4 +11,6 @@
     <string name="update_go_station">更新 Go Station</string>
     <string name="updating">更新中</string>
     <string name="dont_touch_me">別碰我</string>
+    <string name="network_error">網路錯誤</string>
+    <string name="update_success">更新成功</string>
 </resources>

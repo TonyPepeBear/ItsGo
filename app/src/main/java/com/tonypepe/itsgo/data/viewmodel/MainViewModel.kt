@@ -49,8 +49,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     )
     val isochroneFeatureCollectionLiveData: LiveData<FeatureCollection> get() = _isochroneFeatureCollectionLiveData
 
-    private val _toastMessageLiveData: MutableLiveData<String> = MutableLiveData("")
-    val toastMessageLiveData: LiveData<String> get() = _toastMessageLiveData
+    private val _messageLiveData: MutableLiveData<String> = MutableLiveData("")
+    val messageLiveData: LiveData<String> get() = _messageLiveData
 
     private val resources
         get() = getApplication<Application>().resources
@@ -71,10 +71,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         .toTypedArray()
                     db.goStationDao().deleteAll()
                     db.goStationDao().insertAll(*arr)
+                    _messageLiveData.postValue(resources.getString(R.string.update_success))
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
-                    _toastMessageLiveData.postValue("Network error")
+                    _messageLiveData.postValue(resources.getString(R.string.network_error))
                 }
             })
         }
@@ -93,7 +94,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
-                    _toastMessageLiveData.postValue("Network Error")
+                    _messageLiveData.postValue(resources.getString(R.string.network_error))
                 }
             })
         }

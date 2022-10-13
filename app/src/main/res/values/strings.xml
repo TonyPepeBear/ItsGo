@@ -17,4 +17,6 @@
     <string name="update_go_station">Update Go Station</string>
     <string name="updating">Updating</string>
     <string name="dont_touch_me">Don\'t touch me</string>
+    <string name="network_error">Network error</string>
+    <string name="update_success">Update success</string>
 </resources>

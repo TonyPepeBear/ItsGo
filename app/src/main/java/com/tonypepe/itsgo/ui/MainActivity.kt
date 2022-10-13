@@ -68,6 +68,12 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        // observe message
+        model.messageLiveData.observe(this) {
+            if (!it.isNullOrBlank()) {
+                Snackbar.make(binding.appBarMain.fab, it, Snackbar.LENGTH_SHORT).show()
+            }
+        }
         // set showing fragment id
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             model.showingFragmentId.postValue(destination.id)
