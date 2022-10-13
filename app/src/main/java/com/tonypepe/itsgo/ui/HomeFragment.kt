@@ -14,10 +14,7 @@ import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
-import com.mapbox.maps.MapboxMap
-import com.mapbox.maps.RenderedQueryGeometry
-import com.mapbox.maps.RenderedQueryOptions
-import com.mapbox.maps.Style
+import com.mapbox.maps.*
 import com.mapbox.maps.extension.localization.localizeLabels
 import com.mapbox.maps.extension.style.layers.addLayer
 import com.mapbox.maps.extension.style.layers.generated.symbolLayer
@@ -26,6 +23,8 @@ import com.mapbox.maps.extension.style.sources.addSource
 import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.sources.getSourceAs
+import com.mapbox.maps.plugin.animation.MapAnimationOptions
+import com.mapbox.maps.plugin.animation.flyTo
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.locationcomponent.location
@@ -90,6 +89,19 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
             binding.mapView.location.updateSettings {
                 enabled = true
                 pulsingEnabled = true
+            }
+        }
+        // fly to location
+        model.flyToLocation.observe(viewLifecycleOwner) { point ->
+            if (point != null) {
+                val cameraOptions = CameraOptions.Builder()
+                    .center(point)
+                    .zoom(15.0)
+                    .build()
+                val animationOptions = MapAnimationOptions.mapAnimationOptions {
+                    duration(2 * 1000)
+                }
+                mapbox.flyTo(cameraOptions, animationOptions)
             }
         }
         return binding.root

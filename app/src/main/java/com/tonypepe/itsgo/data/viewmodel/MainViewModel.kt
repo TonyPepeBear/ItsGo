@@ -25,6 +25,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         emitSource(db.goStationDao().getAllLiveData().map { it.size })
     }
 
+    val flyToLocation: MutableLiveData<Point> = MutableLiveData(null)
+
     val goStationFeatureCollectionLiveData: LiveData<FeatureCollection> =
         db.goStationDao().getAllLiveData().map {
             FeatureCollection.fromFeatures(it.map {
