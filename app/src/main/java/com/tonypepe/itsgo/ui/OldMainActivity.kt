@@ -98,6 +98,7 @@ class OldMainActivity : AppCompatActivity() {
             }
             true
         }
+
         model.toastMessageLiveData.observe(this) {
             if (it.isBlank()) return@observe
             Toast.makeText(this, "Network error", Toast.LENGTH_SHORT).show()

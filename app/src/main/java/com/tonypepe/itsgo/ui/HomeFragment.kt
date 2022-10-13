@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
+import com.mapbox.android.core.permissions.PermissionsListener
+import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxMap
@@ -23,10 +25,11 @@ import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.sources.getSourceAs
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.maps.plugin.locationcomponent.location
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.FragmentHomeBinding
 
-class HomeFragment : Fragment(), OnMapClickListener {
+class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
     val TAG = this::class.simpleName
 
     lateinit var binding: FragmentHomeBinding
@@ -35,6 +38,8 @@ class HomeFragment : Fragment(), OnMapClickListener {
 
     lateinit var mapbox: MapboxMap
 
+    lateinit var permissionsManager: PermissionsManager
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,6 +47,7 @@ class HomeFragment : Fragment(), OnMapClickListener {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         mapbox = binding.mapView.getMapboxMap()
+        permissionsManager = PermissionsManager(this)
         // init mapbox
         mapbox.loadStyleUri(Style.MAPBOX_STREETS) { style ->
             style.localizeLabels(resources.configuration.locales[0])
@@ -60,6 +66,17 @@ class HomeFragment : Fragment(), OnMapClickListener {
             mapbox.getStyle { style ->
                 style.getSourceAs<GeoJsonSource>(GO_STATION_SOURCE_ID)!!
                     .featureCollection(collection)
+            }
+        }
+        if (PermissionsManager.areLocationPermissionsGranted(context)) {
+            Log.d(TAG, "onCreateView: HI")
+        } else {
+            permissionsManager.requestLocationPermissions(activity)
+        }
+        mapbox.addOnStyleLoadedListener {
+            binding.mapView.location.updateSettings {
+                enabled = true
+                pulsingEnabled = true
             }
         }
         return binding.root
@@ -84,6 +101,10 @@ class HomeFragment : Fragment(), OnMapClickListener {
         }
         return true
     }
+
+    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
+
+    override fun onPermissionResult(granted: Boolean) {}
 
     companion object {
         const val GO_STATION_SOURCE_ID = "GOGORO_SOURCE_ID"

@@ -57,6 +57,9 @@ dependencies {
     // mapbox android sdk
     implementation 'com.mapbox.maps:android:10.8.1'
 
+    // location
+    implementation("com.google.android.gms:play-services-location:20.0.0")
+
     // mapbox java
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-geojson:6.4.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:6.4.0'
