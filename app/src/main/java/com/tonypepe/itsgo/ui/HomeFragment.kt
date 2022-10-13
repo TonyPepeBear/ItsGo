@@ -99,7 +99,7 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
                     .zoom(15.0)
                     .build()
                 val animationOptions = MapAnimationOptions.mapAnimationOptions {
-                    duration(2 * 1000)
+                    duration(3 * 1000)
                 }
                 mapbox.flyTo(cameraOptions, animationOptions)
             }

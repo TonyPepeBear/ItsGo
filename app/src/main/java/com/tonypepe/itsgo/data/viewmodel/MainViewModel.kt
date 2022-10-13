@@ -27,6 +27,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val flyToLocation: MutableLiveData<Point> = MutableLiveData(null)
 
+    val showingFragmentId = MutableLiveData(R.id.nav_home)
+
     val goStationFeatureCollectionLiveData: LiveData<FeatureCollection> =
         db.goStationDao().getAllLiveData().map {
             FeatureCollection.fromFeatures(it.map {
