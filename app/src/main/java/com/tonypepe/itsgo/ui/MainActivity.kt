@@ -59,6 +59,13 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
+                R.id.nav_go_station_detail_fragment -> {
+                    model.flyTo(model.showDetail.value!!.toPoint())
+                    findNavController(R.id.nav_host_fragment_content_main).popBackStack(
+                        R.id.nav_home,
+                        false
+                    )
+                }
                 else -> Snackbar.make(view, R.string.dont_touch_me, Snackbar.LENGTH_SHORT).show()
             }
         }

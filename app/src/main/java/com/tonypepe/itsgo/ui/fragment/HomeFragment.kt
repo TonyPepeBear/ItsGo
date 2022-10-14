@@ -117,7 +117,7 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener, OnCame
             if (point != null && model.isNeedToFly.value == true) {
                 val cameraOptions = CameraOptions.Builder()
                     .center(point)
-                    .zoom(13.0)
+                    .zoom(model.flyToZoom.value)
                     .build()
                 val animationOptions = mapAnimationOptions {
                     duration(3 * 1000)

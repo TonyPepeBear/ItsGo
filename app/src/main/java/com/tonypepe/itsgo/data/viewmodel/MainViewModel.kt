@@ -31,6 +31,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val cameraState: MutableLiveData<CameraState> = MutableLiveData(null)
 
     val flyToLocation: LiveData<Point> = MutableLiveData(null)
+    val flyToZoom: LiveData<Double> = MutableLiveData(13.0)
     val isNeedToFly: LiveData<Boolean> = MutableLiveData(false)
 
     val showingFragmentId = MutableLiveData(R.id.nav_home)
@@ -113,9 +114,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun flyTo(point: Point) {
+    fun flyTo(point: Point, zoom: Double) {
         (isNeedToFly as MutableLiveData).postValue(true)
         (flyToLocation as MutableLiveData).postValue(point)
+        (flyToZoom as MutableLiveData).postValue(zoom)
+    }
+
+    fun flyTo(point: Point) {
+        flyTo(point, 13.0)
     }
 
     fun finishFlyTo() {
