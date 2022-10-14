@@ -22,4 +22,5 @@
     <string name="show_isochrone">Show isochrone</string>
     <string name="double_km">%.1f km</string>
     <string name="show_detail">Show Detail</string>
+    <string name="go_station" translatable="false">Go Station</string>
 </resources>

@@ -56,6 +56,7 @@ class GoStationDetailFragment : Fragment(), OnMapLoadedListener {
         mapbox.addOnMapLoadedListener(this)
         model.showDetail.observe(viewLifecycleOwner) {
             if (it != null) {
+                requireActivity().actionBar?.title = "hi"
                 binding.title.text = it.name
                 binding.address.text = it.addr
                 // camera
