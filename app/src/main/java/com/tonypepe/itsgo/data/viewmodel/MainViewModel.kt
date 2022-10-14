@@ -6,12 +6,14 @@ import com.google.gson.JsonObject
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
+import com.mapbox.maps.CameraState
 import com.mapbox.turf.TurfMeasurement
 import com.tonypepe.itsgo.R
 import com.tonypepe.itsgo.data.AppDatabase
 import com.tonypepe.itsgo.data.entity.GoStation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.*
 import java.io.IOException
 
@@ -26,13 +28,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         emitSource(db.goStationDao().getAllLiveData().map { it.size })
     }
 
-    val flyToLocation: MutableLiveData<Point> = MutableLiveData(null)
+    val cameraState: MutableLiveData<CameraState> = MutableLiveData(null)
+
+    val flyToLocation: LiveData<Point> = MutableLiveData(null)
+    val isNeedToFly: LiveData<Boolean> = MutableLiveData(false)
 
     val showingFragmentId = MutableLiveData(R.id.nav_home)
 
     val allGoStationLiveData = liveData(context = Dispatchers.IO) {
         emitSource(db.goStationDao().getAllLiveData())
     }
+
+    val showDetail: LiveData<GoStation> = MutableLiveData(null)
 
     val userLocationLiveData = MutableLiveData<Point?>(null)
 
@@ -95,6 +102,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
             })
         }
+    }
+
+    fun setDetailGoStationWithName(name: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val g = db.goStationDao().getOneWithName(name)
+            withContext(Dispatchers.Main) {
+                (showDetail as MutableLiveData).postValue(g)
+            }
+        }
+    }
+
+    fun flyTo(point: Point) {
+        (isNeedToFly as MutableLiveData).postValue(true)
+        (flyToLocation as MutableLiveData).postValue(point)
+    }
+
+    fun finishFlyTo() {
+        (isNeedToFly as MutableLiveData).postValue(false)
     }
 
     fun fetchIsochrone(point: Point, meters: Int = 50 * 1000) {

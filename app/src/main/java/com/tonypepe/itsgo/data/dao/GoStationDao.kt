@@ -20,4 +20,7 @@ interface GoStationDao {
 
     @Query("DELETE FROM gostation")
     fun deleteAll(): Int
+
+    @Query("SELECT * FROM GOSTATION WHERE name = :name")
+    fun getOneWithName(name: String): GoStation
 }

@@ -1,4 +1,4 @@
-package com.tonypepe.itsgo.ui
+package com.tonypepe.itsgo.ui.fragment
 
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -16,6 +17,7 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.maps.*
 import com.mapbox.maps.extension.localization.localizeLabels
+import com.mapbox.maps.extension.observable.eventdata.CameraChangedEventData
 import com.mapbox.maps.extension.style.layers.addLayer
 import com.mapbox.maps.extension.style.layers.generated.fillLayer
 import com.mapbox.maps.extension.style.layers.generated.symbolLayer
@@ -26,6 +28,7 @@ import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.sources.getSourceAs
 import com.mapbox.maps.plugin.animation.MapAnimationOptions.Companion.mapAnimationOptions
 import com.mapbox.maps.plugin.animation.flyTo
+import com.mapbox.maps.plugin.delegates.listeners.OnCameraChangeListener
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.locationcomponent.location
@@ -33,8 +36,9 @@ import com.mapbox.turf.TurfMeta
 import com.tonypepe.itsgo.R
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.FragmentHomeBinding
+import com.tonypepe.itsgo.ui.OldMainActivity
 
-class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
+class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener, OnCameraChangeListener {
     val TAG = this::class.simpleName
 
     lateinit var binding: FragmentHomeBinding
@@ -102,9 +106,15 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
                 pulsingEnabled = true
             }
         }
+        // map camera listener
+        mapbox.addOnCameraChangeListener(this)
+        // camera state
+        if (model.cameraState.value != null) {
+            mapbox.setCamera(model.cameraState.value!!.toCameraOptions())
+        }
         // fly to location
         model.flyToLocation.observe(viewLifecycleOwner) { point ->
-            if (point != null) {
+            if (point != null && model.isNeedToFly.value == true) {
                 val cameraOptions = CameraOptions.Builder()
                     .center(point)
                     .zoom(13.0)
@@ -113,6 +123,7 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
                     duration(3 * 1000)
                 }
                 mapbox.flyTo(cameraOptions, animationOptions)
+                model.finishFlyTo()
             }
         }
         // observe isochrone
@@ -150,13 +161,15 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
                 return@queryRenderedFeatures
             }
             if (!it.value.isNullOrEmpty()) {
+                val goStationName = it.value!![0].feature.getStringProperty("name")
                 Snackbar.make(
                     binding.root,
-                    it.value!![0].feature.getStringProperty("name"),
+                    goStationName,
                     Snackbar.LENGTH_SHORT
                 )
-                    .setAction(R.string.show_isochrone) {
-                        model.fetchIsochrone(point)
+                    .setAction(R.string.show_detail) {
+                        model.setDetailGoStationWithName(goStationName)
+                        findNavController().navigate(R.id.nav_go_station_detail_fragment)
                     }
                     .show()
             }
@@ -175,5 +188,15 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener {
         const val GO_STATION_LAYER_ID = "GOGORO_LAYER_ID"
         const val ISOCHRONE_SOURCE_ID = "ISOCHRONE_SOURCE_ID"
         const val ISOCHRONE_LAYER_ID = "ISOCHRONE_LAYER_ID"
+    }
+
+    override fun onCameraChanged(eventData: CameraChangedEventData) {
+        // save camera state
+        model.cameraState.postValue(mapbox.cameraState)
+    }
+
+    override fun onDestroy() {
+        mapbox.removeOnCameraChangeListener(this)
+        super.onDestroy()
     }
 }

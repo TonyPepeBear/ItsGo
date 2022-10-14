@@ -54,9 +54,8 @@ class MainActivity : AppCompatActivity() {
                             model.userLocationLiveData.postValue(
                                 it.toPoint()
                             )
-                            model.flyToLocation.postValue(
-                                it.toPoint()
-                            )
+                            if (model.showingFragmentId.value == R.id.nav_home)
+                                model.flyTo(it.toPoint())
                         }
                     }
                 }

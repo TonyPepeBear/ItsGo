@@ -1,4 +1,4 @@
-package com.tonypepe.itsgo.ui
+package com.tonypepe.itsgo.ui.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle

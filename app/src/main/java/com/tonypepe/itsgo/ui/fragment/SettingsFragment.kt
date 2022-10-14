@@ -1,4 +1,4 @@
-package com.tonypepe.itsgo.ui
+package com.tonypepe.itsgo.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater

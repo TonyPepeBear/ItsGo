@@ -16,4 +16,5 @@
     <string name="show_isochrone">涵蓋範圍</string>
     <string name="menu_go_station_list">Go Station 列表</string>
     <string name="double_km">%.1f 公里</string>
+    <string name="show_detail">詳細資料</string>
 </resources>
