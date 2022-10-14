@@ -29,6 +29,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val showingFragmentId = MutableLiveData(R.id.nav_home)
 
+    val allGoStationLiveData = liveData(context = Dispatchers.IO) {
+        emitSource(db.goStationDao().getAllLiveData())
+    }
+
     val goStationFeatureCollectionLiveData: LiveData<FeatureCollection> =
         db.goStationDao().getAllLiveData().map {
             FeatureCollection.fromFeatures(it.map {
