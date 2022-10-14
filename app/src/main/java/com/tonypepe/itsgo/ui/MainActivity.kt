@@ -18,10 +18,10 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsManager
-import com.mapbox.geojson.Point
 import com.tonypepe.itsgo.R
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.ActivityMainBinding
+import com.tonypepe.itsgo.toPoint
 
 class MainActivity : AppCompatActivity() {
     private val TAG = this::class.java.simpleName
@@ -39,16 +39,23 @@ class MainActivity : AppCompatActivity() {
         locationServices = LocationServices.getFusedLocationProviderClient(this)
         setSupportActionBar(binding.appBarMain.toolbar)
 
+        //user location
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+            locationServices.lastLocation.addOnSuccessListener {
+                model.userLocationLiveData.postValue(it.toPoint())
+            }
+        }
+
         binding.appBarMain.fab.setOnClickListener { view ->
             when (model.showingFragmentId.value) {
-                R.id.nav_home -> {
+                R.id.nav_home, R.id.nav_go_station_list -> {
                     if (PermissionsManager.areLocationPermissionsGranted(this)) {
                         locationServices.lastLocation.addOnSuccessListener {
+                            model.userLocationLiveData.postValue(
+                                it.toPoint()
+                            )
                             model.flyToLocation.postValue(
-                                Point.fromLngLat(
-                                    it.longitude,
-                                    it.latitude
-                                )
+                                it.toPoint()
                             )
                         }
                     }

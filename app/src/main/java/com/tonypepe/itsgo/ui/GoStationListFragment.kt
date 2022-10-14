@@ -7,8 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mapbox.geojson.Point
+import com.mapbox.turf.TurfConstants
+import com.mapbox.turf.TurfMeasurement
 import com.tonypepe.itsgo.R
 import com.tonypepe.itsgo.data.entity.GoStation
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
@@ -30,15 +34,24 @@ class GoStationListFragment : Fragment() {
             adapter = this@GoStationListFragment.adapter
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
-        model.allGoStationLiveData.observe(viewLifecycleOwner) {
+        model.allGoStationSortWithUserLocatoinLiveData.observe(viewLifecycleOwner) {
             adapter.setItems(it)
+        }
+        model.userLocationLiveData.observe(viewLifecycleOwner) {
+            if (it != null) {
+                adapter.setUserLocation(it)
+            }
         }
         return binding.root
     }
 }
 
-class GoStationAdapter(private var items: List<GoStation>) :
+class GoStationAdapter(
+    private var items: List<GoStation>,
+    private var userLocation: Point? = null
+) :
     RecyclerView.Adapter<GoStationItemViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GoStationItemViewHolder {
         return GoStationItemViewHolder(
@@ -47,7 +60,7 @@ class GoStationAdapter(private var items: List<GoStation>) :
     }
 
     override fun onBindViewHolder(holder: GoStationItemViewHolder, position: Int) {
-        holder.bindView(items[position])
+        holder.bindView(items[position], userLocation)
     }
 
     override fun getItemCount(): Int = items.size
@@ -57,12 +70,26 @@ class GoStationAdapter(private var items: List<GoStation>) :
         this.items = items
         notifyDataSetChanged()
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setUserLocation(point: Point) {
+        this.userLocation = point
+        notifyDataSetChanged()
+    }
 }
 
 class GoStationItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val binding = ItemGoStationBinding.bind(itemView)
 
-    fun bindView(item: GoStation) {
+    fun bindView(item: GoStation, userLocation: Point?) {
         binding.title.text = item.name
+        if (userLocation != null) {
+            val d = TurfMeasurement.distance(
+                item.toPoint(),
+                userLocation,
+                TurfConstants.UNIT_KILOMETRES
+            )
+            binding.distance.text = itemView.context.resources.getString(R.string.double_km, d)
+        }
     }
 }

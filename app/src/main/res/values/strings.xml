@@ -20,4 +20,5 @@
     <string name="network_error">Network error</string>
     <string name="update_success">Update success</string>
     <string name="show_isochrone">Show isochrone</string>
+    <string name="double_km">%.1f km</string>
 </resources>

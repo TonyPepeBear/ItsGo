@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
+import com.mapbox.turf.TurfMeasurement
 import com.tonypepe.itsgo.R
 import com.tonypepe.itsgo.data.AppDatabase
 import com.tonypepe.itsgo.data.entity.GoStation
@@ -31,6 +32,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val allGoStationLiveData = liveData(context = Dispatchers.IO) {
         emitSource(db.goStationDao().getAllLiveData())
+    }
+
+    val userLocationLiveData = MutableLiveData<Point?>(null)
+
+    val allGoStationSortWithUserLocatoinLiveData = liveData(Dispatchers.IO) {
+        emitSource(userLocationLiveData.switchMap { point ->
+            if (point == null) return@switchMap allGoStationLiveData
+            return@switchMap allGoStationLiveData.map { stations ->
+                stations.sortedBy { TurfMeasurement.distance(point, it.toPoint()) }
+            }
+        })
     }
 
     val goStationFeatureCollectionLiveData: LiveData<FeatureCollection> =
