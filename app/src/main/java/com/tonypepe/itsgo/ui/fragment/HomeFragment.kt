@@ -10,7 +10,6 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.FeatureCollection
@@ -162,16 +161,8 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener, OnCame
             }
             if (!it.value.isNullOrEmpty()) {
                 val goStationName = it.value!![0].feature.getStringProperty("name")
-                Snackbar.make(
-                    binding.root,
-                    goStationName,
-                    Snackbar.LENGTH_SHORT
-                )
-                    .setAction(R.string.show_detail) {
-                        model.setDetailGoStationWithName(goStationName)
-                        findNavController().navigate(R.id.nav_go_station_detail_fragment)
-                    }
-                    .show()
+                model.setDetailGoStationWithName(goStationName)
+                findNavController().navigate(R.id.nav_go_station_detail_fragment)
             }
         }
         model.clearIsochrone()

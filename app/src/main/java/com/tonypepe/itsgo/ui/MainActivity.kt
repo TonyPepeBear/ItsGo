@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 R.id.nav_go_station_detail_fragment -> {
-                    model.flyTo(model.showDetail.value!!.toPoint())
+                    model.flyTo(model.showDetail.value!!.toPoint(), 16.5)
                     findNavController(R.id.nav_host_fragment_content_main).popBackStack(
                         R.id.nav_home,
                         false
