@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.mapbox.geojson.Feature
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxMap
@@ -67,6 +68,11 @@ class GoStationDetailFragment : Fragment(), OnMapLoadedListener {
                         .build()
                 )
             }
+        }
+        // isochrone
+        binding.buttonIsochrone.setOnClickListener {
+            model.fetchIsochrone(model.showDetail.value!!.toPoint())
+            findNavController().popBackStack(R.id.nav_home, false)
         }
         return binding.root
     }
