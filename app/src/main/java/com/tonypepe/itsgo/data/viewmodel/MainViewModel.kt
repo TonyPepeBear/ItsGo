@@ -131,10 +131,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         (isNeedToFly as MutableLiveData).postValue(false)
     }
 
-    fun fetchIsochrone(point: Point, meters: Int = 50 * 1000) {
+    fun fetchIsochrone(point: Point, kms: Int = 50) {
         viewModelScope.launch(Dispatchers.IO) {
             val req = Request.Builder()
-                .url(createIsochroneURL(point, meters))
+                .url(createIsochroneURL(point, kms * 1000))
                 .build()
             httpClient.newCall(req).enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) {

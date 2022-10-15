@@ -71,7 +71,10 @@ class GoStationDetailFragment : Fragment(), OnMapLoadedListener {
         }
         // isochrone
         binding.buttonIsochrone.setOnClickListener {
-            model.fetchIsochrone(model.showDetail.value!!.toPoint())
+            model.fetchIsochrone(
+                model.showDetail.value!!.toPoint(),
+                model.settingIsochroneLiveData.value ?: 50
+            )
             findNavController().popBackStack(R.id.nav_home, false)
         }
         return binding.root

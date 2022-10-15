@@ -156,6 +156,7 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener, OnCame
     }
 
     override fun onMapClick(point: Point): Boolean {
+        model.clearIsochrone()
         mapbox.queryRenderedFeatures(
             RenderedQueryGeometry(mapbox.pixelForCoordinate(point)),
             RenderedQueryOptions(listOf(OldMainActivity.GOGORO_LAYER_ID), null)
@@ -170,7 +171,6 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener, OnCame
                 findNavController().navigate(R.id.nav_go_station_detail_fragment)
             }
         }
-        model.clearIsochrone()
         return true
     }
 
