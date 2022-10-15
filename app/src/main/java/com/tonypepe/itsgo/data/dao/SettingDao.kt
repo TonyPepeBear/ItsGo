@@ -13,7 +13,7 @@ interface SettingDao {
     fun getSetting(key: String): SettingEntity
 
     @Query("SELECT * FROM SETTING WHERE `KEY` = :key")
-    fun getSettingLiveData(key: String): LiveData<SettingEntity>
+    fun getSettingLiveData(key: String): LiveData<SettingEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun setSetting(settingEntity: SettingEntity)

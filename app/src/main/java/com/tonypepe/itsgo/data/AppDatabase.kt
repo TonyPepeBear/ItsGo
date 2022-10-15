@@ -30,7 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
         emitSource(
             settingDao()
                 .getSettingLiveData(SettingEntity.KEY_SETTING_ISOCHRONE)
-                .map { it.value.toInt() }
+                .map { it?.value?.toIntOrNull() ?: 50 }
         )
     }
 
