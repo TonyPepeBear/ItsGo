@@ -5,9 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.tonypepe.itsgo.data.dao.GoStationDao
-import com.tonypepe.itsgo.data.entity.GoStation
+import com.tonypepe.itsgo.data.entity.GoStationEntity
 
-@Database(entities = [GoStation::class], version = 1)
+@Database(entities = [GoStationEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun goStationDao(): GoStationDao
 

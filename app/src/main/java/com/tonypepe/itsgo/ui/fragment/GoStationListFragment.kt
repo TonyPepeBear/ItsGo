@@ -16,7 +16,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.turf.TurfConstants
 import com.mapbox.turf.TurfMeasurement
 import com.tonypepe.itsgo.R
-import com.tonypepe.itsgo.data.entity.GoStation
+import com.tonypepe.itsgo.data.entity.GoStationEntity
 import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.FragmentGoStationListBinding
 import com.tonypepe.itsgo.databinding.ItemGoStationBinding
@@ -49,14 +49,14 @@ class GoStationListFragment : Fragment(), OnItemClickListener {
         return binding.root
     }
 
-    override fun onItemClick(item: GoStation) {
+    override fun onItemClick(item: GoStationEntity) {
         model.setDetailGoStationWithName(item.name)
         findNavController().navigate(R.id.nav_go_station_detail_fragment)
     }
 }
 
 class GoStationAdapter(
-    private var items: List<GoStation>,
+    private var items: List<GoStationEntity>,
     private var userLocation: Point? = null,
     private var onItemClickListener: OnItemClickListener? = null
 ) :
@@ -75,7 +75,7 @@ class GoStationAdapter(
     override fun getItemCount(): Int = items.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(items: List<GoStation>) {
+    fun setItems(items: List<GoStationEntity>) {
         this.items = items
         notifyDataSetChanged()
     }
@@ -90,7 +90,7 @@ class GoStationAdapter(
 class GoStationItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val binding = ItemGoStationBinding.bind(itemView)
 
-    fun bindView(item: GoStation, userLocation: Point?) {
+    fun bindView(item: GoStationEntity, userLocation: Point?) {
         binding.title.text = item.name
         if (userLocation != null) {
             val d = TurfMeasurement.distance(
@@ -104,5 +104,5 @@ class GoStationItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
 }
 
 interface OnItemClickListener {
-    fun onItemClick(item: GoStation)
+    fun onItemClick(item: GoStationEntity)
 }

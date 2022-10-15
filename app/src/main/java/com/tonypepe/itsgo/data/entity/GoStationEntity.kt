@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import com.mapbox.geojson.Point
 
 @Entity(tableName = "gostation")
-data class GoStation(
+data class GoStationEntity(
     @PrimaryKey
     @ColumnInfo(name = "name")
     val name: String,

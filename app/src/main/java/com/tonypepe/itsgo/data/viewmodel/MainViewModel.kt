@@ -10,7 +10,7 @@ import com.mapbox.maps.CameraState
 import com.mapbox.turf.TurfMeasurement
 import com.tonypepe.itsgo.R
 import com.tonypepe.itsgo.data.AppDatabase
-import com.tonypepe.itsgo.data.entity.GoStation
+import com.tonypepe.itsgo.data.entity.GoStationEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,7 +40,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         emitSource(db.goStationDao().getAllLiveData())
     }
 
-    val showDetail: LiveData<GoStation> = MutableLiveData(null)
+    val showDetail: LiveData<GoStationEntity> = MutableLiveData(null)
 
     val userLocationLiveData = MutableLiveData<Point?>(null)
 
@@ -91,7 +91,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         .drop(1)
                         .map { it.split(",") }
                         .filter { it.size == 4 }
-                        .map { GoStation(it[0], it[1], it[2], it[3]) }
+                        .map { GoStationEntity(it[0], it[1], it[2], it[3]) }
                         .toTypedArray()
                     db.goStationDao().deleteAll()
                     db.goStationDao().insertAll(*arr)
