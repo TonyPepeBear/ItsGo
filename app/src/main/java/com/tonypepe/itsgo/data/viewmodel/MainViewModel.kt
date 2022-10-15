@@ -79,6 +79,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val resources
         get() = getApplication<Application>().resources
 
+    val settingIsochroneLiveData: LiveData<Int> =
+        liveData { emitSource(db.getIsochroneSettingLiveData()) }
+
     fun fetchGoStation() {
         viewModelScope.launch(Dispatchers.IO) {
             val req = Request.Builder()
@@ -149,6 +152,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearIsochrone() {
         _isochroneFeatureCollectionLiveData.postValue(FeatureCollection.fromFeatures(emptyArray()))
+    }
+
+    fun setSettingIsochrone(km: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.setIsochroneSetting(km)
+        }
     }
 
     fun createIsochroneURL(point: Point, meters: Int): String =

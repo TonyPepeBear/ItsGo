@@ -24,4 +24,6 @@
     <string name="show_detail">Show Detail</string>
     <string name="go_station" translatable="false">Go Station</string>
     <string name="show_isochrone_on_map">Show isochrone on map</string>
+    <string name="isochrone_distance">Isochrone distance (km)</string>
+    <string name="require_1_to_100">Must in 1 to 100</string>
 </resources>
