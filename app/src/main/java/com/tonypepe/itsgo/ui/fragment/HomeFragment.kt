@@ -29,7 +29,9 @@ import com.mapbox.maps.plugin.animation.MapAnimationOptions.Companion.mapAnimati
 import com.mapbox.maps.plugin.animation.flyTo
 import com.mapbox.maps.plugin.delegates.listeners.OnCameraChangeListener
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
+import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.turf.TurfMeta
 import com.tonypepe.itsgo.R
@@ -37,7 +39,8 @@ import com.tonypepe.itsgo.data.viewmodel.MainViewModel
 import com.tonypepe.itsgo.databinding.FragmentHomeBinding
 import com.tonypepe.itsgo.ui.OldMainActivity
 
-class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener, OnCameraChangeListener {
+class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener, OnCameraChangeListener,
+    OnMapLongClickListener {
     val TAG = this::class.simpleName
 
     lateinit var binding: FragmentHomeBinding
@@ -86,7 +89,9 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener, OnCame
                 fillColor("#03fc8c")
             })
         }
+        // on map click, long click
         mapbox.addOnMapClickListener(this)
+        mapbox.addOnMapLongClickListener(this)
         // observe go station livedata to mapbox source
         model.goStationFeatureCollectionLiveData.observe(viewLifecycleOwner) { collection ->
             mapbox.getStyle { style ->
@@ -163,6 +168,23 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener, OnCame
                 val goStationName = it.value!![0].feature.getStringProperty("name")
                 model.setDetailGoStationWithName(goStationName)
                 findNavController().navigate(R.id.nav_go_station_detail_fragment)
+            }
+        }
+        model.clearIsochrone()
+        return true
+    }
+
+    override fun onMapLongClick(point: Point): Boolean {
+        mapbox.queryRenderedFeatures(
+            RenderedQueryGeometry(mapbox.pixelForCoordinate(point)),
+            RenderedQueryOptions(listOf(OldMainActivity.GOGORO_LAYER_ID), null)
+        ) {
+            if (it.error != null) {
+                Log.e(TAG, it.error!!)
+                return@queryRenderedFeatures
+            }
+            if (!it.value.isNullOrEmpty()) {
+                // do nothing
             }
         }
         model.clearIsochrone()
