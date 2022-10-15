@@ -1,5 +1,6 @@
 package com.tonypepe.itsgo.ui.fragment
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,8 +39,10 @@ class GoStationDetailFragment : Fragment(), OnMapLoadedListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGoStationDetailBinding.inflate(inflater, container, false)
+        val isNotDarkMode =
+            (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_NO
         mapbox = binding.mapView.getMapboxMap()
-        mapbox.loadStyleUri(Style.MAPBOX_STREETS) { style ->
+        mapbox.loadStyleUri(if (isNotDarkMode) Style.MAPBOX_STREETS else Style.DARK) { style ->
             style.localizeLabels(resources.configuration.locales[0])
             style.addSource(geoJsonSource(GO_STATION_SOURCE_ID))
             style.addImage(
@@ -57,7 +60,6 @@ class GoStationDetailFragment : Fragment(), OnMapLoadedListener {
         mapbox.addOnMapLoadedListener(this)
         model.showDetail.observe(viewLifecycleOwner) {
             if (it != null) {
-                requireActivity().actionBar?.title = "hi"
                 binding.title.text = it.name
                 binding.address.text = it.addr
                 // camera

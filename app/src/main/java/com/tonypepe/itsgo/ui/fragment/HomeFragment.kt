@@ -1,5 +1,6 @@
 package com.tonypepe.itsgo.ui.fragment
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -59,8 +60,10 @@ class HomeFragment : Fragment(), OnMapClickListener, PermissionsListener, OnCame
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         mapbox = binding.mapView.getMapboxMap()
         permissionsManager = PermissionsManager(this)
+        val isDarkMode =
+            (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_NO
         // init mapbox
-        mapbox.loadStyleUri(Style.MAPBOX_STREETS) { style ->
+        mapbox.loadStyleUri(if (isDarkMode) Style.MAPBOX_STREETS else Style.DARK) { style ->
             style.localizeLabels(resources.configuration.locales[0])
             // battery img
             style.addImage(
