@@ -19,6 +19,6 @@
     <string name="show_detail">詳細資料</string>
     <string name="show_isochrone_on_map">在地圖上顯示涵蓋範圍</string>
     <string name="isochrone_distance">涵蓋範圍距離 (km)</string>
-    <string name="go_station" translatable="false">d</string>
+    <string name="go_station" translatable="false">Go Station</string>
     <string name="require_1_to_100">範圍：1 ~ 100</string>
 </resources>
