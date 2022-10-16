@@ -51,7 +51,8 @@
 
     <Button
         android:id="@+id/button_isochrone"
-        style="?attr/materialButtonOutlinedStyle"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        app:icon="@drawable/ic_baseline_zoom_out_map_24"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -59,5 +60,17 @@
         android:text="@string/show_isochrone_on_map"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/address" />
+
+    <Button
+        android:id="@+id/button_google_map"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="0dp"
+        android:text="@string/navi_in_gmap"
+        app:icon="@drawable/google_maps_alt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_isochrone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

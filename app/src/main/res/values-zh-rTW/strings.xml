@@ -23,4 +23,5 @@
     <string name="require_1_to_100">範圍：1 ~ 100</string>
     <string name="first_open_app_title">歡迎</string>
     <string name="first_open_app_detail">請先至設定頁面更新 Go Station</string>
+    <string name="navi_in_gmap">在 Google Map 中導航</string>
 </resources>

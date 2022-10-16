@@ -1,6 +1,8 @@
 package com.tonypepe.itsgo.ui.fragment
 
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -78,6 +80,14 @@ class GoStationDetailFragment : Fragment(), OnMapLoadedListener {
                 model.settingIsochroneLiveData.value ?: 50
             )
             findNavController().popBackStack(R.id.nav_home, false)
+        }
+        // google map intent
+        binding.buttonGoogleMap.setOnClickListener {
+            val p = model.showDetail.value!!
+            val gmmIntentUri = Uri.parse("google.navigation:q=${p.lat}, ${p.lng}&mode=l")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
         }
         return binding.root
     }
