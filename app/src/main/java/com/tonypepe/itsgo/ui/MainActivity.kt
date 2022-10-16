@@ -125,7 +125,9 @@ class MainActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle(R.string.first_open_app_title)
             .setMessage(R.string.first_open_app_detail)
-            .setPositiveButton(R.string.ok) { _, _ -> }
+            .setPositiveButton(R.string.ok) { _, _ ->
+                findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.nav_setting)
+            }
             .show()
     }
 
