@@ -1,9 +1,11 @@
 package com.tonypepe.itsgo.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -109,6 +111,22 @@ class MainActivity : AppCompatActivity() {
                 }
             )
         }
+        // check if first time app open
+        if (getPreferences(Context.MODE_PRIVATE).getBoolean(PREFERENCES_IS_APP_FIRST_OPEN, true)) {
+            getPreferences(Context.MODE_PRIVATE).edit().apply {
+                putBoolean(PREFERENCES_IS_APP_FIRST_OPEN, false)
+                apply()
+            }
+            appFirstOpen()
+        }
+    }
+
+    private fun appFirstOpen() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.first_open_app_title)
+            .setMessage(R.string.first_open_app_detail)
+            .setPositiveButton(R.string.ok) { _, _ -> }
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -120,5 +138,9 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    companion object {
+        const val PREFERENCES_IS_APP_FIRST_OPEN = "PREFERENCES_IS_APP_FIRST_OPEN"
     }
 }
